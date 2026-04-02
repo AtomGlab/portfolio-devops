@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMIN — Sistema de Entrenamiento</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --accent: #c8f542;
+    --accent2: #42c8f5;
+    --accent3: #f5a742;
+    --text: #f0f0f0;
+    --muted: #666;
+    --danger: #f54242;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    position: relative;
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: 'AMIN';
+    position: absolute;
+    right: -20px;
+    top: -30px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 220px;
+    color: rgba(200,245,66,0.04);
+    pointer-events: none;
+    letter-spacing: -5px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 90px);
+    letter-spacing: 2px;
+    line-height: 0.9;
+    margin-bottom: 16px;
+  }
+
+  .header h1 span { color: var(--accent); }
+
+  .header-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .meta-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* NAV TABS */
+  .nav {
+    display: flex;
+    gap: 0;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    padding: 16px 24px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover { color: var(--text); }
+  .nav-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* MAIN */
+  .main { padding: 40px; max-width: 1200px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-title .num {
+    background: var(--accent);
+    color: #000;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    font-weight: 500;
+  }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .header { padding: 40px 20px 30px; }
+    .main { padding: 20px; }
+    .nav { padding: 0 20px; }
+  }
+
+  /* STAT BOXES */
+  .stat-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-unit {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(200,245,66,0.03); }
+
+  .highlight { color: var(--accent); font-weight: 600; }
+  .highlight2 { color: var(--accent2); }
+  .highlight3 { color: var(--accent3); }
+  .muted { color: var(--muted); font-size: 12px; }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .badge-green { background: rgba(200,245,66,0.15); color: var(--accent); }
+  .badge-blue { background: rgba(66,200,245,0.15); color: var(--accent2); }
+  .badge-orange { background: rgba(245,167,66,0.15); color: var(--accent3); }
+  .badge-red { background: rgba(245,66,66,0.15); color: var(--danger); }
+
+  /* RULES */
+  .rule-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .rule-item:last-child { border-bottom: none; }
+
+  .rule-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent);
+    line-height: 1;
+    min-width: 32px;
+  }
+
+  .rule-text { font-size: 14px; line-height: 1.6; }
+  .rule-text strong { color: var(--accent); }
+
+  /* TIMELINE */
+  .timeline-item {
+    display: flex;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .timeline-item:last-child { border-bottom: none; }
+
+  .timeline-week {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--accent);
+    min-width: 80px;
+  }
+
+  /* MACRO BAR */
+  .macro-bar-container {
+    margin: 8px 0;
+  }
+
+  .macro-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .macro-bar {
+    height: 6px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .macro-bar-fill {
+    height: 100%;
+    transition: width 1s ease;
+  }
+
+  /* SUPPLEMENT */
+  .supp-item {
+    padding: 16px;
+    background: var(--surface2);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .supp-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .supp-detail {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .supp-detail strong { color: var(--text); }
+
+  /* ALERT */
+  .alert {
+    padding: 16px 20px;
+    border-left: 4px solid;
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .alert-yellow { border-color: var(--accent); background: rgba(200,245,66,0.05); }
+  .alert-blue { border-color: var(--accent2); background: rgba(66,200,245,0.05); }
+  .alert-red { border-color: var(--danger); background: rgba(245,66,66,0.05); }
+  .alert-orange { border-color: var(--accent3); background: rgba(245,167,66,0.05); }
+
+  /* EXERCISE CARD */
+  .exercise-block {
+    background: var(--surface2);
+    padding: 16px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--border);
+  }
+
+  .exercise-block.primary { border-left-color: var(--accent); }
+  .exercise-block.secondary { border-left-color: var(--accent2); }
+  .exercise-block.prehab { border-left-color: var(--accent3); }
+
+  .exercise-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .exercise-detail {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .exercise-cue {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* CALC STEPS */
+  .calc-step {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .calc-step-label { font-size: 14px; }
+  .calc-step-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* DAY CARD */
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .day-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 1px;
+  }
+
+  .day-theme {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* SCROLL TOP */
+  .scroll-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+
+  p { line-height: 1.7; font-size: 14px; color: #ccc; }
+
+  ul, ol { padding-left: 20px; }
+  li { font-size: 14px; line-height: 1.8; color: #ccc; }
+
+  h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin: 20px 0 10px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  .inline-mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--surface2);
+    padding: 2px 6px;
+    color: var(--accent2);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="tag">Sistema Personal — V1.0</div>
+  <h1>AMIN<br><span>SISTEMA</span></h1>
+  <div class="header-meta">
+    <div class="meta-item">
+      <span class="meta-label">Edad</span>
+      <span class="meta-value">21 años</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Peso</span>
+      <span class="meta-value">82 kg</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Altura</span>
+      <span class="meta-value">1,90 m</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Objetivo</span>
+      <span class="meta-value">Recomposición</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Días/semana</span>
+      <span class="meta-value">4 días</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Gym</span>
+      <span class="meta-value">Oxygen Gym Mollet</span>
+    </div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('nutricion')">Nutrición</button>
+  <button class="nav-btn" onclick="showSection('entrenamiento')">Entrenamiento</button>
+  <button class="nav-btn" onclick="showSection('prehab')">Prehab & Lesiones</button>
+  <button class="nav-btn" onclick="showSection('recuperacion')">Recuperación</button>
+  <button class="nav-btn" onclick="showSection('suplementos')">Suplementos</button>
+  <button class="nav-btn" onclick="showSection('tracker')">Tracker</button>
+  <button class="nav-btn" onclick="showSection('timeline')">Timeline</button>
+</nav>
+
+<div class="main">
+
+  <!-- ==================== NUTRICIÓN ==================== -->
+  <div id="nutricion" class="section active">
+
+    <div class="alert alert-yellow">
+      ⚡ <strong>Nota importante:</strong> Las calculadoras online son notoriamente inexactas. El mejor dato lo dará tu propio cuerpo — si en 2 semanas tu peso no cambia comiendo X calorías, ese es tu mantenimiento real. No hay calculadora que supere eso.
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">01</span> CÁLCULO DE CALORÍAS — PASO A PASO</div>
+
+      <div class="calc-step">
+        <span class="calc-step-label">Fórmula Mifflin-St Jeor (Hombre): (10 × 82) + (6.25 × 190) - (5 × 21) + 5</span>
+        <span class="calc-step-value">BMR = 1,967 kcal</span>
+      </div>
+      <div class="calc-step">
+        <span class="calc-step-label">Multiplicador actividad: Trabajo sedentario (programador) + 4 días gym → Ligeramente activo × 1.375</span>
+        <span class="calc-step-value">TDEE = 2,705 kcal</span>
+      </div>
+      <div class="calc-step">
+        <span class="calc-step-label">Objetivo recomposición: mantenimiento calórico (no déficit agresivo)</span>
+        <span class="calc-step-value">TARGET = 2,700 kcal</span>
+      </div>
+
+      <div class="alert alert-blue" style="margin-top:16px;">
+        💡 <strong>¿Por qué mantenimiento y no déficit?</strong> Para recomposición real en alguien de 21 años con poca experiencia de entrenamiento, comer en mantenimiento con alta proteína y entrenamiento progresivo es suficiente. Tu cuerpo redistribuirá: perderá grasa y ganará músculo simultáneamente. Con déficit agresivo y OMAD, el riesgo de perder músculo es alto.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">02</span> MACROS DIARIOS</div>
+      <div class="grid-3">
+        <div class="stat-box">
+          <div class="stat-big">164</div>
+          <div class="stat-unit">gramos</div>
+          <div class="stat-label">Proteína</div>
+          <div class="muted" style="margin-top:8px;">2g/kg peso corporal. Prioridad #1. Preserva y construye músculo.</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-big" style="color:var(--accent2)">290</div>
+          <div class="stat-unit">gramos</div>
+          <div class="stat-label">Carbohidratos</div>
+          <div class="muted" style="margin-top:8px;">Combustible para entrenar duro. Energía para el gym.</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-big" style="color:var(--accent3)">80</div>
+          <div class="stat-unit">gramos</div>
+          <div class="stat-label">Grasas</div>
+          <div class="muted" style="margin-top:8px;">Hormonas, salud articular, saciedad. No bajar de 60g.</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div class="macro-bar-container">
+          <div class="macro-bar-label"><span>Proteína</span><span style="color:var(--accent)">164g — 656 kcal — 24%</span></div>
+          <div class="macro-bar"><div class="macro-bar-fill" style="width:24%; background:var(--accent);"></div></div>
+        </div>
+        <div class="macro-bar-container">
+          <div class="macro-bar-label"><span>Carbohidratos</span><span style="color:var(--accent2)">290g — 1160 kcal — 43%</span></div>
+          <div class="macro-bar"><div class="macro-bar-fill" style="width:43%; background:var(--accent2);"></div></div>
+        </div>
+        <div class="macro-bar-container">
+          <div class="macro-bar-label"><span>Grasas</span><span style="color:var(--accent3)">80g — 720 kcal — 27%</span></div>
+          <div class="macro-bar"><div class="macro-bar-fill" style="width:27%; background:var(--accent3);"></div></div>
+        </div>
+        <div class="macro-bar-container">
+          <div class="macro-bar-label"><span>Fibra (objetivo)</span><span style="color:var(--muted)">30–35g diarios</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">03</span> ESTRUCTURA DIARIA OMAD</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Ingesta</th>
+            <th>Calorías</th>
+            <th>Proteína</th>
+            <th>Objetivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="highlight">~17:00</td>
+            <td><strong>Batido pre-entrenamiento</strong><br><span class="muted">Whey 40g + leche semi 250ml + plátano mediano</span></td>
+            <td>380 kcal</td>
+            <td>42g</td>
+            <td>Energía, proteína disponible</td>
+          </tr>
+          <tr>
+            <td class="highlight">~18:00–20:00</td>
+            <td><strong>Entrenamiento</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="highlight">~20:00–21:00</td>
+            <td><strong>Comida principal OMAD</strong><br><span class="muted">La comida más importante del día</span></td>
+            <td>2,320 kcal</td>
+            <td>122g</td>
+            <td>Recuperación, recarga glucógeno</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="font-family:'DM Mono',monospace; font-size:12px; color:var(--accent)">TOTAL DIARIO</td>
+            <td class="highlight">2,700 kcal</td>
+            <td class="highlight">164g</td>
+            <td>✓ Objetivo cumplido</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">04</span> PLAN DE COMIDA — 7 DÍAS</div>
+
+      <div class="alert alert-blue" style="margin-bottom:16px; font-size:13px;">
+        🐟 <strong>Proteínas base:</strong> Salmón, atún en lata, pollo, carne picada de ternera y huevos. Platos de tu cultura — baissara, lentejas, alubias y lasaña — integrados en el plan.
+      </div>
+
+      <!-- DÍA 1 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-name">LUNES — BAISSARA + SALMÓN</div>
+            <div class="day-theme">Baissara marroquí + salmón al horno + arroz | Tren superior</div>
+          </div>
+          <span class="badge badge-green">2,700 kcal · 164g prot</span>
+        </div>
+        <table>
+          <thead><tr><th>Momento</th><th>Comida</th><th>Kcal</th><th>P / C / G</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Pre-gym 17h</td>
+              <td>Whey 40g + leche semi 250ml + plátano</td>
+              <td>380</td>
+              <td>42g / 45g / 8g</td>
+            </tr>
+            <tr>
+              <td>OMAD 20h</td>
+              <td><strong>Baissara 300g</strong> (habas secas peladas 150g, ajo, comino, pimentón, aceite oliva, sal) + salmón al horno 200g + arroz basmati 120g (seco) + espinacas salteadas 150g + 2 huevos duros + aceite oliva 10ml</td>
+              <td>2,320</td>
+              <td>122g / 244g / 72g</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert alert-yellow" style="margin-top:12px; font-size:13px;">⭐ <strong>TREAT secreto #1</strong> — baissara auténtica con salmón encima. Reconfortante, sabrosa, perfecta para los macros.</div>
+        <div class="badge badge-blue" style="margin-top:8px;">🍳 Batch cooking: prepara baissara en cantidad — aguanta 3-4 días en la nevera</div>
+      </div>
+
+      <!-- DÍA 2 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-name">MARTES — LENTEJAS CON VERDURAS</div>
+            <div class="day-theme">Lentejas guisadas al estilo marroquí + pollo | Tren inferior</div>
+          </div>
+          <span class="badge badge-green">2,700 kcal · 165g prot</span>
+        </div>
+        <table>
+          <thead><tr><th>Momento</th><th>Comida</th><th>Kcal</th><th>P / C / G</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Pre-gym 17h</td>
+              <td>Whey 40g + leche semi 250ml + plátano</td>
+              <td>380</td>
+              <td>42g / 45g / 8g</td>
+            </tr>
+            <tr>
+              <td>OMAD 20h</td>
+              <td><strong>Lentejas con verduras 400g</strong> (lentejas 160g sec., zanahoria, tomate, cebolla, apio, comino, cúrcuma, ras el hanout) + pechuga de pollo 250g al horno con especias + 3 huevos duros + pan integral 60g + aceite oliva 10ml</td>
+              <td>2,320</td>
+              <td>123g / 247g / 71g</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="badge badge-blue" style="margin-top:8px;">🍳 Batch cooking: las lentejas mejoran de un día para otro — prepara doble</div>
+      </div>
+
+      <!-- DÍA 3 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-name">MIÉRCOLES — LASAÑA DE CARNE</div>
+            <div class="day-theme">Lasaña casera de carne picada + ensalada | Descanso</div>
+          </div>
+          <span class="badge badge-orange">Día de descanso</span>
+        </div>
+        <table>
+          <thead><tr><th>Momento</th><th>Comida</th><th>Kcal</th><th>P / C / G</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>20h</td>
+              <td><strong>Lasaña de carne picada ternera</strong> (350g carne, placas pasta 180g sec., tomate triturado, cebolla, ajo, zanahoria, béchamel ligera con leche semi y harina, mozzarella 60g) + ensalada grande lechuga, tomate, pepino + 2 huevos duros + aceite oliva</td>
+              <td>2,700</td>
+              <td>165g / 291g / 80g</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert alert-yellow" style="margin-top:12px; font-size:13px;">⭐ <strong>TREAT secreto #2</strong> — lasaña casera real. Prepara el domingo y hornea el miércoles. Parece trampa total pero cuadra perfectamente.</div>
+        <div class="badge badge-blue" style="margin-top:8px;">🍳 Batch cooking: prepara la lasaña entera el domingo — congela porciones individuales</div>
+      </div>
+
+      <!-- DÍA 4 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-name">JUEVES — ALUBIAS BLANCAS CON POLLO</div>
+            <div class="day-theme">Alubias blancas guisadas + pollo + salmón | Tren superior</div>
+          </div>
+          <span class="badge badge-green">2,700 kcal · 164g prot</span>
+        </div>
+        <table>
+          <thead><tr><th>Momento</th><th>Comida</th><th>Kcal</th><th>P / C / G</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Pre-gym 17h</td>
+              <td>Whey 40g + leche semi 250ml + plátano</td>
+              <td>380</td>
+              <td>42g / 45g / 8g</td>
+            </tr>
+            <tr>
+              <td>OMAD 20h</td>
+              <td><strong>Alubias blancas guisadas 200g</strong> (sec., con tomate, cebolla, ajo, pimentón ahumado, laurel) + pechuga de pollo 250g a la plancha + salmón 100g al horno + espinacas 100g + 2 huevos + aceite oliva 10ml</td>
+              <td>2,320</td>
+              <td>122g / 245g / 71g</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="badge badge-blue" style="margin-top:8px;">🍳 Batch cooking: cocina las alubias en olla a presión — listas en 20 min</div>
+      </div>
+
+      <!-- DÍA 5 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-name">VIERNES — ATÚN CON PASTA</div>
+            <div class="day-theme">Atún en lata + pasta integral + huevos | Tren inferior</div>
+          </div>
+          <span class="badge badge-green">2,700 kcal · 163g prot</span>
+        </div>
+        <table>
+          <thead><tr><th>Momento</th><th>Comida</th><th>Kcal</th><th>P / C / G</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Pre-gym 17h</td>
+              <td>Whey 40g + leche semi 250ml + plátano</td>
+              <td>380</td>
+              <td>42g / 45g / 8g</td>
+            </tr>
+            <tr>
+              <td>OMAD 20h</td>
+              <td><strong>Atún en lata al natural 3 latas (240g escurrido)</strong> + pasta integral 170g (seca) + salsa de tomate casera con cebolla y pimiento + 3 huevos duros + maíz 60g + parmesano 20g + aceite oliva 10ml</td>
+              <td>2,320</td>
+              <td>121g / 246g / 71g</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert alert-yellow" style="margin-top:12px; font-size:13px;">⭐ <strong>TREAT secreto #3</strong> — pasta al atún estilo italiano. Cuesta 3€ y sabe increíble.</div>
+      </div>
+
+      <!-- DÍA 6 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-name">SÁBADO — CARNE PICADA CON ALUBIAS</div>
+            <div class="day-theme">Estofado de carne + alubias blancas + patata | Descanso</div>
+          </div>
+          <span class="badge badge-orange">Día de descanso</span>
+        </div>
+        <table>
+          <thead><tr><th>Momento</th><th>Comida</th><th>Kcal</th><th>P / C / G</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>20h</td>
+              <td><strong>Carne picada ternera 280g</strong> guisada con tomate, cebolla, ajo, comino y pimentón + alubias blancas cocidas 150g + patata 200g cocida + espinacas 100g + 2 huevos + aceite oliva 10ml</td>
+              <td>2,700</td>
+              <td>164g / 290g / 80g</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="alert alert-yellow" style="margin-top:12px; font-size:13px;">⭐ <strong>TREAT secreto #4</strong> — estofado marroquí de carne con alubias. Reconfortante, barato y cargado de proteína.</div>
+      </div>
+
+      <!-- DÍA 7 -->
+      <div class="day-card">
+        <div class="day-header">
+          <div>
+            <div class="day-name">DOMINGO — SALMÓN TERIYAKI + LENTEJAS ROJAS</div>
+            <div class="day-theme">Salmón marinado + lentejas rojas + quinoa | Descanso + prep semana</div>
+          </div>
+          <span class="badge badge-orange">Día de descanso + prep semana</span>
+        </div>
+        <table>
+          <thead><tr><th>Momento</th><th>Comida</th><th>Kcal</th><th>P / C / G</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>20h</td>
+              <td><strong>Salmón 250g</strong> marinado (salsa de soja, miel, ajo, jengibre) al horno + lentejas rojas 150g (sec.) con cebolla y cúrcuma + quinoa 100g (seca) + espinacas 100g + 2 huevos duros + 10 nueces + aceite oliva</td>
+              <td>2,700</td>
+              <td>165g / 291g / 81g</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px; font-size:13px; color:var(--muted);">Mientras cocinas el domingo: prepara la lasaña para el miércoles, cuece las alubias para el jueves, y deja la baissara hecha para el lunes. 45 minutos = semana entera resuelta.</p>
+      </div>
+
+      <div class="alert alert-blue" style="margin-top: 8px;">
+        🔄 <strong>Rotación semana siguiente:</strong> Cambia salmón por atún, alubias por garbanzos, quinoa por arroz, lentejas verdes por rojas. Los platos base son los mismos — la variación es infinita.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">05</span> HIDRATACIÓN</div>
+      <div class="grid-2">
+        <div>
+          <div class="stat-box">
+            <div class="stat-big">2.9</div>
+            <div class="stat-unit">litros/día</div>
+            <div class="stat-label">Objetivo base</div>
+            <div class="muted" style="margin-top:8px;">82kg × 35ml = 2,870ml<br>+500ml días de gym</div>
+          </div>
+        </div>
+        <div>
+          <h3>Por qué importa para recomposición</h3>
+          <ul style="margin-top:8px;">
+            <li>La deshidratación reduce el rendimiento en un 10-20% en el gym</li>
+            <li>El agua transporta nutrientes al músculo — crítico post-entreno</li>
+            <li>La sed se confunde frecuentemente con hambre</li>
+            <li>El metabolismo baja cuando estás deshidratado</li>
+          </ul>
+          <h3 style="margin-top:16px;">Tips prácticos</h3>
+          <ul>
+            <li>Botella de 1L en el escritorio — bébela antes de comer</li>
+            <li>1L durante el entrenamiento</li>
+            <li>1L con la comida OMAD</li>
+            <li>Si el pis es amarillo oscuro, bebe más</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">06</span> TUS 5 REGLAS PERSONALES</div>
+      <div class="rule-item">
+        <div class="rule-num">01</div>
+        <div class="rule-text"><strong>El batido pre-gym no es opcional.</strong> Entrenar completamente en ayunas a alta intensidad destruye músculo. El batido de las 17h es tu herramienta más importante — nunca te saltes el gym sin él.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">02</div>
+        <div class="rule-text"><strong>Proteína primero, siempre.</strong> Cuando montes tu OMAD, pon el pescado/carne/huevos primero en el plato. No llegues a las grasas y carbos sin haber asegurado los 120g+ de proteína de la comida.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">03</div>
+        <div class="rule-text"><strong>Pesa la comida durante las primeras 4 semanas.</strong> No para siempre — solo para calibrar el ojo. Muchos principiantes subestiman un 30-40% las calorías. Una báscula de cocina de 10€ lo cambia todo.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">04</div>
+        <div class="rule-text"><strong>Muñecas y codos: haz el prehab SIN EXCEPCIÓN.</strong> Tienes debilidad declarada ahí. Si no los refuerzas antes de empezar a cargar peso, te lesionarás. El prehab de 15min, 3 veces por semana, es tu seguro de vida.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">05</div>
+        <div class="rule-text"><strong>El peso en la báscula no es la métrica.</strong> Tu objetivo es recomposición — el peso puede quedarse igual o incluso subir ligeramente mientras pierdes grasa y ganas músculo. Confía en el espejo, las medidas y la fuerza en el gym.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== ENTRENAMIENTO ==================== -->
+  <div id="entrenamiento" class="section">
+
+    <div class="alert alert-blue">
+      📋 <strong>Semana 1 = Semana de calibración.</strong> No vayas al fallo. Aprende los movimientos, encuentra tus pesos, RPE 6-7 máximo. A partir de la semana 2, empezamos a cargar.
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">01</span> ESTRUCTURA SEMANAL — UPPER/LOWER SPLIT</div>
+      <table>
+        <thead>
+          <tr><th>Día</th><th>Sesión</th><th>Foco</th><th>Duración</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="highlight">Lunes</td>
+            <td><strong>Upper A</strong> — Empuje + Tirón</td>
+            <td>Pecho, espalda, hombros, bíceps</td>
+            <td>~90 min</td>
+          </tr>
+          <tr>
+            <td class="highlight">Martes</td>
+            <td><strong>Lower A</strong> — Cuádriceps dominante</td>
+            <td>Squat, leg press, curl femoral</td>
+            <td>~90 min</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted)">Miércoles</td>
+            <td colspan="3" style="color:var(--muted)">DESCANSO — Prehab + movilidad 20 min</td>
+          </tr>
+          <tr>
+            <td class="highlight">Jueves</td>
+            <td><strong>Upper B</strong> — Fuerza + volumen</td>
+            <td>Press banca, remo, OHP, tríceps</td>
+            <td>~90 min</td>
+          </tr>
+          <tr>
+            <td class="highlight">Viernes</td>
+            <td><strong>Lower B</strong> — Posterior cadena</td>
+            <td>Peso muerto, hip thrust, femoral</td>
+            <td>~90 min</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted)">Sáb–Dom</td>
+            <td colspan="3" style="color:var(--muted)">DESCANSO — Caminar, movilidad opcional</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">02</span> UPPER A — EMPUJE + TIRÓN</div>
+      <div class="alert alert-orange" style="margin-bottom:16px; font-size:13px;">
+        ⚠️ <strong>Muñecas y codos:</strong> Usa muñequeras en press hasta que la articulación se haya fortalecido. Nunca bloquees el codo en extensión en ningún ejercicio de empuje.
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>RPE</th><th>Notas</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Press banca barra</strong></td>
+            <td>4 × 6–8</td>
+            <td>RPE 7–8</td>
+            <td>Escápulas juntas y abajo. Codos 45–60°</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Remo con barra (Pendlay)</strong></td>
+            <td>4 × 8–10</td>
+            <td>RPE 7–8</td>
+            <td>Pecho paralelo al suelo. Lleva la barra al ombligo</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Press inclinado mancuernas</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>30–45° de inclinación. Más pecho alto</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Jalón al pecho agarre ancho</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Lleva el pecho hacia la barra, no la barra hacia ti</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Elevaciones laterales (mancuernas)</strong></td>
+            <td>3 × 15–20</td>
+            <td>RPE 7</td>
+            <td>Codo ligeramente doblado. Sube hasta paralelo</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Curl bíceps barra</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Sin balanceo. Codos pegados al cuerpo</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><strong>Extensión tríceps polea</strong></td>
+            <td>3 × 12–15</td>
+            <td>RPE 7</td>
+            <td>Codos fijos. No bloquear completamente</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">03</span> LOWER A — CUÁDRICEPS DOMINANTE</div>
+      <table>
+        <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>RPE</th><th>Notas</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Sentadilla con barra</strong></td>
+            <td>4 × 6–8</td>
+            <td>RPE 7–8</td>
+            <td>Profundidad paralela mínima. Rodillas sobre pies</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Prensa de piernas</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Pies a la anchura de hombros. No bloquear rodillas</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Extensión de cuádriceps (máquina)</strong></td>
+            <td>3 × 12–15</td>
+            <td>RPE 7</td>
+            <td>Contracción al final. Cuidado con rodilla si hay molestia</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Curl femoral tumbado (máquina)</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Contracción completa. Tempo 2–0–2</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Hip thrust con barra</strong></td>
+            <td>3 × 12–15</td>
+            <td>RPE 7</td>
+            <td>Barbilla al pecho, aprieta glúteo arriba</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Gemelos en máquina (sentado)</strong></td>
+            <td>4 × 15–20</td>
+            <td>RPE 7</td>
+            <td>Rango completo. Pausa 1 seg arriba</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">04</span> UPPER B — FUERZA + VOLUMEN</div>
+      <table>
+        <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>RPE</th><th>Notas</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>OHP barra de pie</strong></td>
+            <td>4 × 6–8</td>
+            <td>RPE 7–8</td>
+            <td>Glúteo apretado. Barra baja al cuello, no al pecho</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Dominadas (lastre si necesario)</strong></td>
+            <td>4 × 6–10</td>
+            <td>RPE 7–8</td>
+            <td>Agarre supino o neutro. Pecho al bar</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Press mancuernas plano</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Rango completo. No chocar mancuernas arriba</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Remo en polea baja (agarre neutro)</strong></td>
+            <td>3 × 12–15</td>
+            <td>RPE 7</td>
+            <td>Tira con los codos, no con las manos</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Face pulls (polea alta)</strong></td>
+            <td>3 × 15–20</td>
+            <td>RPE 6</td>
+            <td>CLAVE para muñecas/codos. Retracción escapular</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Curl martillo mancuernas</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Fortalece braquial — protege el codo</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><strong>Skull crushers EZ barra</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Barra baja a la frente. No abrés el codo</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">05</span> LOWER B — CADENA POSTERIOR</div>
+      <table>
+        <thead><tr><th>#</th><th>Ejercicio</th><th>Series × Reps</th><th>RPE</th><th>Notas</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Peso muerto convencional</strong></td>
+            <td>4 × 5–6</td>
+            <td>RPE 7–8</td>
+            <td>Bar sobre el pie. Espalda neutra. Empuja el suelo</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Romanian Deadlift (RDL)</strong></td>
+            <td>3 × 10–12</td>
+            <td>RPE 7</td>
+            <td>Bisagra de cadera. Siente el estiramiento del femoral</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Zancadas con mancuernas</strong></td>
+            <td>3 × 10–12/pierna</td>
+            <td>RPE 7</td>
+            <td>Rodilla no toca el suelo. Torso recto</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Curl femoral en máquina</strong></td>
+            <td>3 × 12–15</td>
+            <td>RPE 7</td>
+            <td>Contrae glúteo en la posición inicial</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Hip thrust (barra)</strong></td>
+            <td>3 × 15</td>
+            <td>RPE 7</td>
+            <td>Extensión total de cadera. Pausa 1 seg arriba</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>Gemelos en prensa</strong></td>
+            <td>4 × 15–20</td>
+            <td>RPE 7</td>
+            <td>Rango completo de movimiento</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">06</span> REGLAS DE PROGRESIÓN</div>
+      <div class="grid-2">
+        <div>
+          <h3>Cuándo subir peso</h3>
+          <ul>
+            <li>Alcanzas el límite superior del rango de reps (ej. 8 reps) con RPE ≤ 7 durante <strong>2 sesiones consecutivas</strong></li>
+            <li>Compuestos upper: <strong>+2.5 kg</strong></li>
+            <li>Compuestos lower: <strong>+5 kg</strong></li>
+            <li>Accesorios: añade reps primero, peso después</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Señales de alerta</h3>
+          <ul>
+            <li>RPE sube sin cambiar el peso → necesitas descanso</li>
+            <li>3 semanas sin progreso → revisa nutrición y sueño</li>
+            <li>Dolor agudo en muñeca/codo → para, haz prehab, reduce carga</li>
+            <li>Deload cada 5-6 semanas mínimo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== PREHAB ==================== -->
+  <div id="prehab" class="section">
+
+    <div class="alert alert-red">
+      🚨 <strong>Amin, esto es prioridad #1 para ti.</strong> Tienes muñecas y codos débiles declarados. Si no los refuerzas antes y durante el entrenamiento, te lesionarás dentro de las primeras 8 semanas. Este prehab no es opcional.
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">01</span> RUTINA PREHAB — 3×/SEMANA (15–20 MIN)</div>
+      <p style="margin-bottom:16px;">Hacer los miércoles, más 2 días de tu elección. Antes del entrenamiento o en días de descanso.</p>
+
+      <h3>BLOQUE A — MUÑECAS Y CODOS (6 min)</h3>
+      <div class="exercise-block prehab">
+        <div class="exercise-name">Rotaciones de muñeca con pelota de tenis</div>
+        <div class="exercise-detail">2 series × 20 reps cada dirección</div>
+        <div class="exercise-cue">Sostén la pelota, gira la muñeca lentamente en todo el rango. Sin dolor — si duele, reduce el rango.</div>
+      </div>
+      <div class="exercise-block prehab">
+        <div class="exercise-name">Flexión/extensión de muñeca con mancuerna ligera</div>
+        <div class="exercise-detail">3 series × 15 reps — 2–3 kg máximo</div>
+        <div class="exercise-cue">Antebrazo apoyado en el muslo. Mueve solo la muñeca. Rango completo y controlado.</div>
+      </div>
+      <div class="exercise-block prehab">
+        <div class="exercise-name">Pronación/supinación con mancuerna</div>
+        <div class="exercise-detail">3 series × 15 reps</div>
+        <div class="exercise-cue">Codo doblado 90°. Rota el antebrazo de palma arriba a palma abajo. Fortalece el cúbito y radio.</div>
+      </div>
+      <div class="exercise-block prehab">
+        <div class="exercise-name">Curl de muñeca inverso (agarre prono)</div>
+        <div class="exercise-detail">2 series × 15 reps — muy ligero</div>
+        <div class="exercise-cue">El músculo extensor del antebrazo está cronicamente débil en gente que no ha entrenado. Esto lo activa.</div>
+      </div>
+
+      <h3>BLOQUE B — HOMBROS Y MANGUITO ROTADOR (6 min)</h3>
+      <div class="exercise-block primary">
+        <div class="exercise-name">Face pulls con banda elástica</div>
+        <div class="exercise-detail">3 series × 20 reps</div>
+        <div class="exercise-cue">Tira hacia la cara, codos altos. Retracción escapular al final. Previene el impingement de hombro.</div>
+      </div>
+      <div class="exercise-block primary">
+        <div class="exercise-name">Rotación externa con banda (codo pegado)</div>
+        <div class="exercise-detail">3 series × 15 reps cada brazo</div>
+        <div class="exercise-cue">Codo pegado al costado, 90°. Solo rota externamente el hombro. Infraespinoso y redondo menor.</div>
+      </div>
+      <div class="exercise-block primary">
+        <div class="exercise-name">Press con mancuerna agarre neutro (cuadrupedia)</div>
+        <div class="exercise-detail">2 series × 12 reps — muy ligero</div>
+        <div class="exercise-cue">Estabilización del manguito. No es un ejercicio de fuerza — es de control.</div>
+      </div>
+
+      <h3>BLOQUE C — CADERAS Y RODILLAS (5 min)</h3>
+      <div class="exercise-block secondary">
+        <div class="exercise-name">Clamshell con banda elástica</div>
+        <div class="exercise-detail">3 series × 15 reps cada lado</div>
+        <div class="exercise-cue">Tumbado de lado, rodillas dobladas. Abre la rodilla superior como una almeja. Activa glúteo medio.</div>
+      </div>
+      <div class="exercise-block secondary">
+        <div class="exercise-name">Puente de glúteo con banda</div>
+        <div class="exercise-detail">3 series × 20 reps</div>
+        <div class="exercise-cue">Banda por encima de las rodillas. Empuja las rodillas hacia afuera mientras subes. Previene colapso de rodilla en sentadilla.</div>
+      </div>
+      <div class="exercise-block secondary">
+        <div class="exercise-name">Sentadilla en caja (box squat) con banda — sin peso</div>
+        <div class="exercise-detail">2 series × 10 reps</div>
+        <div class="exercise-cue">Aprende el patrón de movimiento. Rodillas no colapsan hacia dentro.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">02</span> CALENTAMIENTO ANTES DE CADA SESIÓN (10 MIN)</div>
+      <table>
+        <thead><tr><th>Ejercicio</th><th>Duración/Reps</th><th>Objetivo</th></tr></thead>
+        <tbody>
+          <tr><td>Bici estática o remo ergómetro</td><td>5 minutos suave</td><td>Elevar temperatura corporal</td></tr>
+          <tr><td>Rotaciones de muñeca y codo</td><td>30 seg cada articulación</td><td>Lubricar articulaciones</td></tr>
+          <tr><td>Rotaciones de hombro (círculos)</td><td>10 × adelante, 10 × atrás</td><td>Activar manguito</td></tr>
+          <tr><td>Hip circles y apertura de cadera</td><td>10 reps cada lado</td><td>Movilidad de cadera</td></tr>
+          <tr><td>Series de activación (vacías o muy ligeras)</td><td>2 series × 10 del primer ejercicio</td><td>Sistema nervioso</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">03</span> SEÑALES DE ALERTA — CUÁNDO PARAR</div>
+      <div class="grid-2">
+        <div>
+          <div class="alert alert-red">
+            🛑 <strong>PARA INMEDIATAMENTE si:</strong>
+            <ul style="margin-top:8px;">
+              <li>Dolor agudo y repentino en cualquier articulación</li>
+              <li>Dolor que empeora durante el ejercicio</li>
+              <li>Inflamación visible en muñeca o codo</li>
+              <li>Entumecimiento u hormigueo en la mano</li>
+              <li>Chasquido con dolor (no solo el chasquido)</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="alert alert-yellow">
+            ✅ <strong>Normal — puedes continuar:</strong>
+            <ul style="margin-top:8px;">
+              <li>Agujetas 24-48h después</li>
+              <li>Sensación de fatiga muscular durante el ejercicio</li>
+              <li>Leve tensión en el músculo (no articulación)</li>
+              <li>Chasquido sin dolor</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== RECUPERACIÓN ==================== -->
+  <div id="recuperacion" class="section">
+
+    <div class="card">
+      <div class="card-title"><span class="num">01</span> RUTINA DE SUEÑO — EL ARMA SECRETA</div>
+      <div class="alert alert-blue" style="margin-bottom:16px;">
+        💤 <strong>El 80% del crecimiento muscular ocurre durante el sueño.</strong> Tienes 7-8h de media — eso es bueno. El objetivo es mejorar la CALIDAD, no solo la cantidad.
+      </div>
+      <div class="grid-2">
+        <div>
+          <h3>Protocolo nocturno</h3>
+          <ul>
+            <li><strong>Hora de dormir consistente</strong> — mismo horario 7 días</li>
+            <li><strong>Sin pantallas 30 min antes</strong> — la luz azul retrasa la melatonina</li>
+            <li><strong>Temperatura habitación 18-20°C</strong> — óptimo para el sueño profundo</li>
+            <li><strong>Oscuridad total</strong> — antifaz si hace falta</li>
+            <li><strong>Comida 1h antes de dormir</strong> — caseína o proteína lenta en la OMAD ayuda</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Lo que NO hacer</h3>
+          <ul>
+            <li>Cafeína después de las 14:00 (si tomas pre-workout, ojo)</li>
+            <li>Entrenamiento después de las 21:00 — eleva el cortisol</li>
+            <li>Pantalla del móvil en la cama</li>
+            <li>Cenas muy copiosas justo antes de dormir</li>
+          </ul>
+          <div class="alert alert-orange" style="margin-top:12px; font-size:13px;">
+            ⚡ Puesto que entrenas 18-20h y comes a las 20-21h, intenta dormir a las 23-23:30 máximo para maximizar la recuperación.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">02</span> RUTINA DIARIA DE MOVILIDAD (15–20 MIN)</div>
+      <p style="margin-bottom:16px;">Hazla cada día — por las mañanas o antes de dormir. Tarda menos que un episodio de YouTube.</p>
+
+      <table>
+        <thead><tr><th>Ejercicio</th><th>Duración</th><th>Foco</th></tr></thead>
+        <tbody>
+          <tr><td>Child's pose con brazos extendidos</td><td>60 seg</td><td>Dorsal, hombros, caderas</td></tr>
+          <tr><td>Hip flexor stretch (rodilla en suelo)</td><td>60 seg/lado</td><td>Psoas — crítico para sentadilla</td></tr>
+          <tr><td>Pigeon pose o figura 4</td><td>60 seg/lado</td><td>Rotadores de cadera</td></tr>
+          <tr><td>Cat-cow (columna)</td><td>10 repeticiones lentas</td><td>Movilidad espinal</td></tr>
+          <tr><td>Rotación torácica en cuadrupedia</td><td>10 reps/lado</td><td>Tórax — mejora bench y OHP</td></tr>
+          <tr><td>Estiramiento de pectoral en marco</td><td>45 seg/lado</td><td>Pecho y hombro anterior</td></tr>
+          <tr><td>Dead hang en barra</td><td>30–60 seg</td><td>Descompresión columna, hombros</td></tr>
+          <tr><td>Estiramiento de cuádriceps de pie</td><td>45 seg/lado</td><td>Quad y rodilla</td></tr>
+          <tr><td>Rotaciones de muñeca y dedos</td><td>30 seg</td><td>Específico para ti</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">03</span> PROTOCOLO DE DELOAD</div>
+      <div class="grid-2">
+        <div>
+          <h3>Cuándo hacer deload</h3>
+          <ul>
+            <li>Cada <strong>5-6 semanas</strong> de forma programada</li>
+            <li>Si el RPE sube 1-2 puntos sin cambiar peso</li>
+            <li>Si llevas 3 sesiones sin poder progresar</li>
+            <li>Si el sueño se deteriora o el humor cae</li>
+            <li>Si hay molestias articulares persistentes</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Cómo hacer el deload</h3>
+          <ul>
+            <li>Mantén los <strong>mismos ejercicios</strong></li>
+            <li>Reduce el volumen al <strong>50–60%</strong> de las series normales</li>
+            <li>Reduce el peso al <strong>60–70%</strong> de lo habitual</li>
+            <li>RPE máximo: 6</li>
+            <li>Duerme más, haz más movilidad</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">04</span> SEÑALES DE BAJO RECUPERACIÓN</div>
+      <div class="alert alert-red">
+        Si tienes 3 o más de estas señales durante más de 5 días seguidos, reduce el volumen de entrenamiento un 30% durante 1 semana:
+        <ul style="margin-top:8px;">
+          <li>Rendimiento en el gym constantemente peor que la semana anterior</li>
+          <li>Irritabilidad o falta de motivación para entrenar</li>
+          <li>Sueño interrumpido o incapacidad de dormir pese a cansancio</li>
+          <li>Frecuencia cardíaca en reposo elevada (+5-10 bpm de lo normal)</li>
+          <li>Hambre inusualmente alta o nula</li>
+          <li>Molestias articulares que no desaparecen con 48h de descanso</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== SUPLEMENTOS ==================== -->
+  <div id="suplementos" class="section">
+
+    <div class="alert alert-yellow">
+      ⚡ <strong>Perspectiva correcta:</strong> Los suplementos son el 1-2% del resultado. Entrenamiento, nutrición, sueño y consistencia son el 98%. No compres nada caro — lo que te recomiendo son los únicos con evidencia científica sólida.
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">01</span> SUPLEMENTOS RECOMENDADOS PARA AMIN</div>
+
+      <div class="supp-item">
+        <div class="supp-name">🥤 WHEY PROTEÍNA</div>
+        <div class="supp-detail">
+          <strong>Dosis:</strong> 40g antes de entrenar (tu batido pre-gym)<br>
+          <strong>Cuándo:</strong> 17:00 — con leche y plátano<br>
+          <strong>Por qué tú:</strong> Con OMAD es prácticamente imposible llegar a 164g de proteína sin ayuda. El whey resuelve el problema de forma barata y eficaz.<br>
+          <strong>Producto económico:</strong> Myprotein Impact Whey o HSN Evowhey — ~20€/kg. Sabor chocolate o vainilla para el batido.
+        </div>
+      </div>
+
+      <div class="supp-item">
+        <div class="supp-name" style="color:var(--accent2)">💪 CREATINA MONOHIDRATO</div>
+        <div class="supp-detail">
+          <strong>Dosis:</strong> 3–5g diarios. Sin fase de carga.<br>
+          <strong>Cuándo:</strong> Con la comida OMAD — la consistencia importa más que el timing<br>
+          <strong>Por qué tú:</strong> El suplemento más estudiado de la historia. Aumenta la fuerza 5-15%, mejora la recuperación y la composición corporal. Para alguien empezando, la diferencia es muy notable.<br>
+          <strong>Producto económico:</strong> Creatina monohidrato pura de Myprotein o HSN — 3-4€/mes. No compres nada fancy.
+        </div>
+      </div>
+
+      <div class="supp-item">
+        <div class="supp-name" style="color:var(--accent3)">☀️ VITAMINA D3</div>
+        <div class="supp-detail">
+          <strong>Dosis:</strong> 2,000–4,000 UI diarias<br>
+          <strong>Cuándo:</strong> Con la comida OMAD (es liposoluble — necesita grasa)<br>
+          <strong>Por qué tú:</strong> Eres programador — pasas el día en interior. En España, fuera de julio-agosto, la mayoría de la población tiene deficiencia. La vitamina D afecta la síntesis proteica, la testosterona y la recuperación muscular.<br>
+          <strong>Producto económico:</strong> Vitamina D3 + K2 de cualquier farmacia o Amazon — 5-8€/3 meses.
+        </div>
+      </div>
+
+      <div class="supp-item">
+        <div class="supp-name" style="color:var(--accent)">🐟 OMEGA-3 (ACEITE DE PESCADO)</div>
+        <div class="supp-detail">
+          <strong>Dosis:</strong> 2-3g de EPA+DHA diarios (no de aceite total — mira la etiqueta)<br>
+          <strong>Cuándo:</strong> Con la comida OMAD<br>
+          <strong>Por qué tú:</strong> Ya lo tomas (viste que tomabas 2 pastillas). Antiinflamatorio, protege las articulaciones (muñecas y codos especialmente), mejora la síntesis proteica muscular. Sigue con ellos — bien elegido.<br>
+          <strong>Producto económico:</strong> Verifica que tus pastillas actuales tengan al menos 500mg EPA+DHA por cápsula. Si no, cámbialas por Myprotein Omega 3 o Solgar.
+        </div>
+      </div>
+
+      <div class="supp-item">
+        <div class="supp-name">😴 MAGNESIO (OPCIONAL)</div>
+        <div class="supp-detail">
+          <strong>Dosis:</strong> 300-400mg de magnesio bisglicinato o malato<br>
+          <strong>Cuándo:</strong> 30-60 min antes de dormir<br>
+          <strong>Por qué tú:</strong> Mejora la calidad del sueño profundo y la recuperación muscular. Si notas calambres o sueño inquieto, añádelo. No es urgente pero es barato y efectivo.<br>
+          <strong>Producto económico:</strong> Magnesio bisglicinato de HSN o Natural Suplementos — 10-12€/2 meses.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ORDEN DE PRIORIDAD DE COMPRA</div>
+      <table>
+        <thead><tr><th>Prioridad</th><th>Suplemento</th><th>Coste aproximado</th><th>Impacto</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-red">1</span></td><td>Whey proteína</td><td>~20€/mes</td><td>Imprescindible con OMAD</td></tr>
+          <tr><td><span class="badge badge-orange">2</span></td><td>Creatina monohidrato</td><td>~3-4€/mes</td><td>Muy alto</td></tr>
+          <tr><td><span class="badge badge-blue">3</span></td><td>Vitamina D3+K2</td><td>~2€/mes</td><td>Alto (especialmente en invierno)</td></tr>
+          <tr><td><span class="badge badge-green">4</span></td><td>Omega-3</td><td>~5€/mes</td><td>Medio-alto (ya los tomas)</td></tr>
+          <tr><td style="color:var(--muted)">5</td><td style="color:var(--muted)">Magnesio</td><td style="color:var(--muted)">~5€/mes</td><td style="color:var(--muted)">Medio (opcional)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ==================== TRACKER ==================== -->
+  <div id="tracker" class="section">
+
+    <div class="card">
+      <div class="card-title"><span class="num">01</span> CHECK-IN SEMANAL — TEMPLATE</div>
+      <p style="margin-bottom:16px;">Cada domingo noche, 10 minutos. Este ritual te mantendrá en el camino.</p>
+
+      <table>
+        <thead><tr><th>Métrica</th><th>Cómo medirlo</th><th>Frecuencia</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Peso corporal</strong></td>
+            <td>Cada mañana al levantarte, en ayunas, después de orinar. Usa la media de 7 días — no el número de un día aislado.</td>
+            <td>Diario → media semanal</td>
+          </tr>
+          <tr>
+            <td><strong>Pesos de los levantamientos</strong></td>
+            <td>Anota en el lift log: ejercicio, series × reps, peso, RPE, notas.</td>
+            <td>Cada sesión</td>
+          </tr>
+          <tr>
+            <td><strong>Energía (1-10)</strong></td>
+            <td>¿Cómo fue el nivel de energía general durante el día y en el gym?</td>
+            <td>Post-entreno</td>
+          </tr>
+          <tr>
+            <td><strong>Calidad sueño (1-10)</strong></td>
+            <td>¿Cómo dormiste? ¿Te despertaste descansado?</td>
+            <td>Cada mañana</td>
+          </tr>
+          <tr>
+            <td><strong>Adherencia nutricional (1-10)</strong></td>
+            <td>¿Llegaste a los macros? ¿Tomaste el batido? ¿Tuviste la OMAD completa?</td>
+            <td>Diario</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">02</span> PROTOCOLO DE FOTOS Y MEDIDAS</div>
+      <div class="grid-2">
+        <div>
+          <h3>Fotos de progreso</h3>
+          <ul>
+            <li>Cada <strong>2 semanas</strong>, misma hora (mañana, en ayunas)</li>
+            <li>Siempre en la <strong>misma luz</strong> (natural si posible)</li>
+            <li>Mismo fondo, misma postura</li>
+            <li>Ángulos: frontal, lateral izquierdo, espalda</li>
+            <li>Sin ropa holgada — shorts ajustados</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Medidas corporales</h3>
+          <ul>
+            <li>Cada <strong>4 semanas</strong></li>
+            <li>Cintura (a la altura del ombligo)</li>
+            <li>Pecho (pezones)</li>
+            <li>Bíceps (contraído)</li>
+            <li>Muslo (a mitad del fémur)</li>
+            <li>Siempre en ayunas y a la misma hora</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">03</span> GUÍA DE DECISIONES BASADA EN DATOS</div>
+      <table>
+        <thead><tr><th>Lo que muestra el tracking</th><th>Qué significa</th><th>Qué hacer</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Peso estable + fuerza aumenta</td>
+            <td class="highlight">✅ Recomposición funcionando</td>
+            <td>No cambies nada. Sigue igual.</td>
+          </tr>
+          <tr>
+            <td>Peso estable + medidas de cintura bajan</td>
+            <td class="highlight">✅ Perdiendo grasa</td>
+            <td>Perfecto. Continúa.</td>
+          </tr>
+          <tr>
+            <td>Peso sube ligeramente + fuerza sube</td>
+            <td style="color:var(--accent2)">✅ Ganando músculo</td>
+            <td>Bien si cintura no sube. Continúa.</td>
+          </tr>
+          <tr>
+            <td>Peso no se mueve 3 semanas + fuerza estancada</td>
+            <td style="color:var(--accent3)">⚠️ Probable déficit calórico o mala recuperación</td>
+            <td>Revisa si llegas a 2,700 kcal. Revisa sueño.</td>
+          </tr>
+          <tr>
+            <td>Fuerza baja consistentemente</td>
+            <td style="color:var(--danger)">🚨 Bajo-recuperación o déficit severo</td>
+            <td>Aumenta calorías 200 kcal. Prioriza sueño. Considera deload.</td>
+          </tr>
+          <tr>
+            <td>RPE sube sin cambiar pesos (3+ sesiones)</td>
+            <td style="color:var(--danger)">🚨 Fatiga acumulada</td>
+            <td>Deload esta semana.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">04</span> PSICOLOGÍA DEL TRACKING</div>
+      <div class="alert alert-blue">
+        <strong>El dato más importante:</strong> La tendencia a largo plazo, no el número de hoy.
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">01</div>
+        <div class="rule-text">El peso varía 1-2 kg día a día por agua, comida, sal. <strong>Nunca reacciones al número de un solo día.</strong> Usa medias semanales.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">02</div>
+        <div class="rule-text">Si la fuerza sube, el plan funciona. <strong>La báscula es la métrica menos importante</strong> para recomposición.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">03</div>
+        <div class="rule-text">Revisa las fotos del mes 1 comparadas con el mes 3. <strong>Los cambios graduales son invisibles al día a día</strong> — las fotos los revelan.</div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-num">04</div>
+        <div class="rule-text">Un mal día no arruina el plan. <strong>La consistencia durante semanas y meses</strong> es lo que genera resultados, no la perfección de un día.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== TIMELINE ==================== -->
+  <div id="timeline" class="section">
+
+    <div class="card">
+      <div class="card-title"><span class="num">01</span> PROYECCIÓN REALISTA — 16 SEMANAS</div>
+
+      <div class="alert alert-blue" style="margin-bottom:24px;">
+        ✅ <strong>Buena noticia:</strong> A los 21 años, con 82kg y sin experiencia de entrenamiento, eres el candidato ideal para recomposición real. Tu cuerpo va a responder muy bien los primeros 6 meses.
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-week">SEM 1–2</div>
+        <div>
+          <strong>Calibración y adaptación neurológica</strong><br>
+          <span style="font-size:13px; color:#ccc;">Tu sistema nervioso aprende los movimientos. No verás cambios en el espejo todavía, pero tu coordinación mejorará notablemente. Los pesos subirán rápido — no porque ganes músculo, sino porque aprendes a reclutar fibras. Normal sentir agujetas fuertes.</span>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-week">SEM 3–4</div>
+        <div>
+          <strong>Primera fuerza real + digestión de la OMAD mejorada</strong><br>
+          <span style="font-size:13px; color:#ccc;">Empezarás a notar que cargas más peso con menos esfuerzo. El cuerpo se acostumbrará a la carga proteica alta. Posible ligero endurecimiento de los músculos — todavía no es volumen, es densidad.</span>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-week">SEM 5–8</div>
+        <div>
+          <strong>Cambios visibles en el espejo</strong><br>
+          <span style="font-size:13px; color:#ccc;">Aquí es donde empieza lo bueno. La cintura empieza a afinarse ligeramente, los hombros y la espalda ganan definición. Los pesos en los levantamientos principales habrán subido 15-25%. Las fotos del mes 2 vs mes 1 mostrarán diferencia clara.</span>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-week">SEM 9–12</div>
+        <div>
+          <strong>Recomposición consolidada</strong><br>
+          <span style="font-size:13px; color:#ccc;">Si has sido consistente con nutrición y entrenamiento, el físico cambia de forma notable. Más anchura de hombros, cintura más estrecha, piernas más definidas. Es posible que el peso apenas haya cambiado — pero el espejo es completamente diferente.</span>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-week">SEM 13–16</div>
+        <div>
+          <strong>Sólido. Listo para el siguiente bloque.</strong><br>
+          <span style="font-size:13px; color:#ccc;">A las 16 semanas tendrás una base sólida de fuerza y un físico visiblemente mejorado. En este punto evaluamos: si quieres seguir en recomposición, o si tiene más sentido hacer una fase de volumen controlado o una fase de definición.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">02</span> EXPECTATIVAS NUMÉRICAS REALISTAS</div>
+      <div class="grid-3">
+        <div class="stat-box">
+          <div class="stat-big">+20–30%</div>
+          <div class="stat-unit">en levantamientos principales</div>
+          <div class="stat-label">En 16 semanas</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-big" style="color:var(--accent2)">−2–4 cm</div>
+          <div class="stat-unit">de cintura</div>
+          <div class="stat-label">Si la nutrición es buena</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-big" style="color:var(--accent3)">~0 kg</div>
+          <div class="stat-unit">cambio en báscula</div>
+          <div class="stat-label">Normal en recomposición</div>
+        </div>
+      </div>
+      <div class="alert alert-yellow" style="margin-top:20px;">
+        ⚡ <strong>Recuerda:</strong> Si el peso sube 1-2 kg pero la cintura baja y la fuerza sube, el plan está funcionando perfectamente. No te obsesiones con la báscula.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="num">03</span> REVISIONES DEL PLAN</div>
+      <table>
+        <thead><tr><th>Semana</th><th>Qué revisar</th><th>Posibles ajustes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="highlight">Semana 2</td>
+            <td>¿Los pesos de calibración son correctos? ¿Llega a los macros?</td>
+            <td>Ajustar pesos del programa, ajustar tamaño de la OMAD</td>
+          </tr>
+          <tr>
+            <td class="highlight">Semana 6</td>
+            <td>¿Hay progresión en los levantamientos? ¿Señales de bajo-recuperación?</td>
+            <td>Deload si procede, ajuste de calorías si fuerza no sube</td>
+          </tr>
+          <tr>
+            <td class="highlight">Semana 12</td>
+            <td>Comparar fotos, medidas, pesos del gimnasio</td>
+            <td>Decidir si continuar recomposición o cambiar a fase de volumen</td>
+          </tr>
+          <tr>
+            <td class="highlight">Semana 16</td>
+            <td>Revisión completa del bloque. ¿Qué funcionó? ¿Qué no?</td>
+            <td>Diseñar el siguiente bloque de 16 semanas</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+
+</body>
+</html>
